@@ -1,0 +1,5 @@
+The Libraries that I have used are:-
+
+1. Tkinter ("pip3 install tkinter" or "pip3 install tk")
+2. Requests (pip3 install requests)
+3. Time (not needed to install, already present)

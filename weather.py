@@ -19,19 +19,18 @@ def getCurrentWeather():
     max_temp = int(json_data['main']['temp_max'] - 273.15)
     pressure = str(json_data['main']['pressure'])
     humidity = str(json_data['main']['humidity'])
-    sunrise = str(time.strftime('%I:%M:%S', time.gmtime(
-        json_data['sys']['sunrise'] - 21600)))
-    sunset = str(time.strftime('%I:%M:%S', time.gmtime(
-        json_data['sys']['sunset'] - 21600)))
+    sunrise = str(time.strftime('%I:%M:%S', time.gmtime(json_data['sys']['sunrise'] - 21600)))
+    sunset = str(time.strftime('%I:%M:%S', time.gmtime(json_data['sys']['sunset'] - 21600)))
     visible = str(json_data["visibility"])
     lat = str(json_data["coord"]["lat"])
     lon = str(json_data["coord"]["lon"])
     w_speed = str(json_data["wind"]["speed"])
 
     final_description = description + "\n" + str(temp) + "°C"
-    final_info = "\n" + "Min Temp: " + str(min_temp) + "°C" + "\n" + "Max Temp: " + str(max_temp) + "°C" + "\n" + "Pressure: " + str(pressure) + " milibars" + "\n" + "Humidity: " + str(humidity) + "%" + "\n" + "Sunrise: " + sunrise + \
-        "\n" + "Sunset: " + sunset + "\n" + "Visibility: " + str(visible) + " meters" + "\n" + "Lattitude: " + str(
-            lat) + "\n" + "Longitude: " + str(lon) + "\n" + "Wind Speed: " + str(w_speed) + " miles per hour"
+    final_info = "\n" + "Min Temp: " + str(min_temp) + "°C" + "\n" + "Max Temp: " + str(max_temp) + "°C" + "\n" + "Pressure: " + \
+        str(pressure) + " milibars" + "\n" + "Humidity: " + str(humidity) + "%" + "\n" + "Sunrise: " + sunrise + " a.m." + \
+        "\n" + "Sunset: " + sunset + " p.m." + "\n" + "Visibility: " + str(visible) + " meters" + "\n" + "Lattitude: " + \
+            str(lat) + "\n" + "Longitude: " + str(lon) + "\n" + "Wind Speed: " + str(w_speed) + " miles per hour"
 
     current_label2.config(text=final_description)
     current_label3.config(text=final_info)
@@ -45,8 +44,10 @@ def getFutureWeather():
     api = "https://api.openweathermap.org/data/2.5/forecast?q=" + \
         city+"&appid=1bddb27de6fe856d12b27e8e9e0d2e1c"
     json_data = req.get(api).json()
-
-    population = str(json_data["city"]["population"])
+    try:
+       population = str(json_data["city"]["population"])
+    except:
+        population = 'No information'
     lat = str(json_data["city"]["coord"]["lat"])
     lon = str(json_data["city"]["coord"]["lon"])
     sunrise = time.strftime('%I:%M:%S', time.gmtime(json_data['city']['sunrise'] - 21600))
@@ -56,14 +57,18 @@ def getFutureWeather():
     temp = str(int(json_data["list"][0]["main"]["temp"]-273.15))
     pressure = str(json_data["list"][0]["main"]["pressure"])
     humidity = str(json_data["list"][0]["main"]["humidity"])
-    rain_in_3h = str(json_data["list"][0]["rain"]['3h'])
+    try:
+      rain_in_3h = str(json_data["list"][0]["rain"]['3h']) + + "mm"
+    except:
+        rain_in_3h = 'No informtaion available'
+        print('No information available')
     description = json_data["list"][0]["weather"][0]["description"]
     w_speed = str(json_data["list"][0]["wind"]["speed"])
 
     final_info = description + "\n" + str(temp) + "°C"
     final_data = "\n" + "Pressure: " + str(pressure) + " milibars" + "\n" + "Humidity: " + str(humidity) + "%" + "\n" + "Sunrise: " + sunrise + " a.m." + \
         "\n" + "Sunset: " + sunset + " p.m." + "\n" + "Date: " + date + "\n" + "Time: " + t + "\n" + "Population: " + str(population) + "\n" + "Lattitude: " + str(
-            lat) + "\n" + "Longitude: " + str(lon) + "\n" + "Wind Speed: " + str(w_speed) + " miles per hour" + "\n" + "Forecast for Rain in Upcoming 3 hours: " + rain_in_3h + "mm"
+            lat) + "\n" + "Longitude: " + str(lon) + "\n" + "Wind Speed: " + str(w_speed) + " miles per hour" + "\n" + "Forecast for Rain in Upcoming 3 hours: " + rain_in_3h
 
     future_label2.config(text=final_info)
     future_label3.config(text=final_data)
@@ -81,26 +86,28 @@ def getHistoricalWeather():
         lat+"&lon="+long+"&appid=1bddb27de6fe856d12b27e8e9e0d2e1c"
     json_data = req.get(api).json()
 
-    alert = json_data["alerts"][0]["description"]
     sunrise = time.strftime('%I:%M:%S', time.gmtime(json_data["daily"][0]["sunrise"] - 21600))
     sunset = time.strftime('%I:%M:%S', time.gmtime(json_data["daily"][0]["sunset"] - 21600))
     moonrise = time.strftime('%I:%M:%S', time.gmtime(json_data["daily"][0]["moonrise"] - 21600))
     moonset = time.strftime('%I:%M:%S', time.gmtime(json_data["daily"][0]["moonset"] - 21600))
     moon_phase = moon_phase = int(json_data["daily"][0]['moon_phase']*100)
-    temp_avg = float((int(json_data["daily"][0]["temp"]["day"]-273.15) +int(json_data["daily"][0]["temp"]["night"]-273.15))/2)
-    rain = json_data["daily"][0]["rain"]
+    temp_avg = float((int(json_data["daily"][0]["temp"]["day"]-273.15) + int(json_data["daily"][0]["temp"]["night"]-273.15))/2)
+    try:
+      rain = json_data["daily"][0]["rain"] + "mm"
+    except:
+        rain = 'No informtaion available'
+        print('No information available')
     uvi = json_data["daily"][0]["uvi"]
     pressure = json_data["daily"][0]["pressure"]
     humidity = json_data["daily"][0]["humidity"]
     description = json_data["daily"][0]["weather"][0]["description"]
     w_speed = json_data["daily"][0]["wind_speed"]
 
-    final_info = "\n" + str(description) + "\n" + \
-        "Average Temperature for the day: " + str(temp_avg) + "°C"
-    final_data = "\n" + str(alert) + "\n" + "\n" + "Pressure: " + str(pressure) + " milibars" + "\n" + "Humidity: " + str(humidity) + "%" + "\n" + "Sunrise: " + str(sunrise) + " a.m." + "\n" + "Sunset: " + str(sunset) + " p.m." + \
+    final_info = "\n" + str(description) + "\n" + "Average Temperature for the day: " + str(temp_avg) + "°C"
+    final_data = "\n" + "Pressure: " + str(pressure) + " milibars" + "\n" + "Humidity: " + str(humidity) + "%" + "\n" + "Sunrise: " + str(sunrise) + " a.m." + "\n" + "Sunset: " + str(sunset) + " p.m." + \
         "\n" + "Moonrise: " + str(moonrise) + " p.m." + "\n" + "Moonset: " + str(moonset) + " a.m." + "\n" + "Moonphase: " + str(moon_phase) + " %" + "\n" + "Wind Speed: " + \
         str(w_speed) + " miles per hour" + "\n" + "Rain: " + \
-        str(rain) + "mm" + "\n" + "UVI Index: " + str(uvi)
+        str(rain) + "\n" + "UVI Index: " + str(uvi)
 
     hist_label2.config(text=final_info)
     hist_label3.config(text=final_data)
@@ -155,8 +162,7 @@ def future():
     top.geometry("750x700")
     top["bg"] = "#A4DE02"
 
-    future_label1 = Label(top, text=' Please enter the City Name to get the Future Prediction ',
-                          justify='center', width=45, font=b, background="green", foreground="white")
+    future_label1 = Label(top, text=' Please enter the City Name to get the Future Prediction ', justify='center', width=45, font=b, background="green", foreground="white")
     future_label1.pack()
     textField = Entry(top, justify='center', width=20, font=t)
     textField.pack(pady=20)
